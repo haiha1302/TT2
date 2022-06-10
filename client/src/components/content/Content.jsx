@@ -1,8 +1,11 @@
-import React, { useState } from 'react'
-import { Modal } from './Modal';
+import React, { useRef } from 'react'
+import Post from '../Post/Post'
 
 const Content = () => {
-    const [open, setOpen] = useState(false);
+    const textRef = useRef();
+    const Check = () => {
+        console.log(textRef.current.innerText);
+    }
     return (
         <main>
             <div className="create_infor">
@@ -11,15 +14,15 @@ const Content = () => {
                         <img src="https://billboardvn.vn/wp-content/uploads/2019/04/Ava-Max-2019-cr-Lauren-Dunn-billboard-1548.jpg" alt="" />
                     </div>
                     <div className='create_infor_fill_modal'>
-                        <div onClick={() => setOpen(true)}>
-                            <span>What are you thinking?</span>
-                        </div>
+                        <div aria-label='What are you thinking' ref={textRef} contentEditable="true" data-text="What are you thinking" className='text'></div>
                     </div>
                 </div>
+                <button onClick={Check}>Share</button>
             </div>
-            {
-                open && <Modal turnOn={setOpen} />
-            }
+            <section>
+                <Post />
+                <Post />
+            </section>
         </main>
     )
 }

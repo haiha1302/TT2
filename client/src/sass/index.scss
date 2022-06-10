@@ -47,16 +47,20 @@ header {
   display: flex;
   background-color: $grey;
   width: 100%;
-  height: 100vh;
   padding: 20px 0;
   .empty {
     flex-basis: 25%;
   }
-  .main{
-    flex-basis: 50%;
+  .main {
+    width: 800px;
   }
 }
 
 input {
   outline: none;
+}
+
+[contentEditable="true"]:empty:not(:focus):before {
+  content: attr(data-text);
+  color: $textGrey;
 }

@@ -4,7 +4,7 @@ import * as AiIcons from 'react-icons/ai';
 import * as BiIcons from 'react-icons/bi';
 
 const Header = () => {
-    const scrollRef = useRef();
+    const scrollRef = useRef(null);
     useEffect(() => {
         window.addEventListener('scroll', () => {
             if (window.scrollY > 0) {
