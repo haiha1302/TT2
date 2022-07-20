@@ -1,9 +1,9 @@
-import React, { useRef } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useRef } from 'react';
+// import { useLocation } from 'react-router-dom';
 
 const Navbar = () => {
     const hamRef = useRef();
-    const navRef = useRef();
+    // const navRef = useRef();
 
     const openNav = () => {
         if (hamRef.current.classList.contains('closed')) {
@@ -17,9 +17,9 @@ const Navbar = () => {
     return (
         <div className="hamburger">
             <button onClick={openNav} className='closed' ref={hamRef}>
-                <span></span>
-                <span></span>
-                <span></span>
+                <span>2</span>
+                <span>4</span>
+                <span>6</span>
             </button>
         </div>
     )

@@ -1,66 +1,74 @@
-const { regisUser, verifyOtp, logUser } = require("../services/userService");
-const User = require("../models/userModel");
+const { UserServices } = require('../services/userService');
+const { OTPServices } = require('../services/otpService')
+// const User = require('../models/userModel');
 
-//register
-exports.register = async (req, res) => {
-  const { email, username, password, dateOfBirth } = req.body;
-  const { code, element, message } = await regisUser({
-    email,
-    username,
-    password,
-    dateOfBirth,
-  });
+const UsersController = {
+    //register
+    register: async (req, res) => {
+        const { email, username, password, dateOfBirth } = req.body;
+        const { code, element, message } = await UserServices.registerUser({
+            email,
+            username,
+            password,
+            dateOfBirth,
+        });
 
-  return res.status(code).json({
-    code,
-    element,
-    message,
-  });
-};
+        return res.status(code).json({
+            code,
+            element,
+            message,
+        });
+    },
 
-//verify email
-exports.verifyAcc = async (req, res) => {
-  const { email, otp } = req.body;
-  const { code, element, message } = await verifyOtp({ email, otp });
-  return res.status(code).json({
-    code,
-    element,
-    message,
-  });
-};
+    //verify email
+    verifyAcc: async (req, res) => {
+        const { email, otp } = req.body;
+        const { code, element, message } = await UserServices.verifyOtp({ email, otp });
+        
+        return res.status(code).json({
+            code,
+            element,
+            message,
+        });
+    },
 
-//login
-exports.login = async (req, res) => {
-  const { password, username } = req.body;
-  const { code, message } = await logUser({ username, password, res });
+    //login
+    login: async (req, res) => {
+        const { email, password } = req.body;
+        const { code, message, user } = await UserServices.loginUser({ email, password, res });
 
-  return res.status(code).json({
-    code,
-    message,
-  });
-};
+        return res.status(code).json({
+            code,
+            message,
+            user
+        });
+    },
 
-//logout
-exports.logout = (req, res) => {
-  res.clearCookie("token");
-  res.status(200).json({ message: "Logout" });
-};
+    //logout
+    logout: (req, res) => {
+        res.clearCookie('token');
+        res.status(200).json({ message: 'Logout' });
+    },
 
-//user detail
-exports.userDetail = async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id).select('-password');
-    if (!user) {
-      return {
-        code: 400,
-        message: "user not found",
-      };
+    //user detail
+    userDetail: async (req, res) => {
+        try {
+            const user = await User.findById(req.user.id).select('-password');
+            if (!user) {
+                return {
+                    code: 400,
+                    message: 'user not found',
+                };
+            }
+            return res.status(200).json({
+                code: 200,
+                user,
+            });
+        } catch (error) {
+            console.log(error);
+        }
     }
-    return res.status(200).json({
-      code: 200,
-      user,
-    });
-  } catch (error) {
-    console.log(error);
-  }
 };
+
+module.exports = { UsersController }
+

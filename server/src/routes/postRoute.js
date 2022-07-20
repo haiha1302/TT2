@@ -1,27 +1,22 @@
-const {
-  createPost,
-  postDetail,
-  updatePost,
-  deletePost,
-  commentPost,
-  getAllPost,
-  toggle_like,
-} = require("../controllers/postController");
-const { auth, authEdit } = require("../middleware/auth");
+const { postsController } = require('../controllers/postsController');
+const { Auth } = require('../middleware/auth');
+const { uploadServices } = require('../services/uploadServices')
 
-const router = require("express").Router();
+const router = require('express').Router();
 
-router.post("/create", auth, createPost);
+router.post('/create', postsController.createPost);
 
+router.post('/uploadfiles', postsController.uploadFiles);
 // router.get("/all", getAllPost);
 
 router
-  .route("/:id")
-  .get(auth, postDetail)
-  .put(auth, authEdit, updatePost)
-  .delete(auth, authEdit, deletePost);
+    .route('/:id')
+    .get(Auth.auth, postsController.postDetail)
+    .put(Auth.auth, Auth.authEdit, postsController.updatePost)
+    .delete(Auth.auth, Auth.authEdit, postsController.deletePost);
 
-router.post("/:post_id/comment", auth, commentPost);
+router.post('/:post_id/comment', Auth.auth, postsController.commentPost);
 
-router.post("/:post_id/like", auth, toggle_like);
+router.post('/:post_id/like', Auth.auth, postsController.toggle_like);
+
 module.exports = router;
