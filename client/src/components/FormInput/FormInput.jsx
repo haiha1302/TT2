@@ -8,6 +8,7 @@ const FormInput = (props) => {
             inputMode={props.inputMode}
             autoComplete='off'
             required
+            name={props.name}
         />
     );
 };

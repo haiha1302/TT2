@@ -12,6 +12,8 @@ route.post("/login", UsersController.login);
 
 route.post("/logout", UsersController.logout);
 
-route.get("/user/me", Auth.auth, UsersController.userDetail);
+// route.post("/profile", UsersController.userProfile);
+
+route.get('/check-user', UsersController.checkUser)
 
 module.exports = route;

@@ -1,4 +1,5 @@
 const cloudinary = require('cloudinary').v2;
+const { v4: uuidv4 } = require('uuid');
 const fs = require('fs');
 
 cloudinary.config({
@@ -9,10 +10,12 @@ cloudinary.config({
 
 const uploadServices = async file => {
     try {
+        const postId = uuidv4()
+
         const uploadFiles = await cloudinary.uploader.upload(
             file.tempFilePath,
             {
-                folder: 'posts/:id',
+                folder: 'post/id',
                 resource_type: 'auto',
                 chunk_size: 6000000,
                 eager: [
@@ -26,7 +29,7 @@ const uploadServices = async file => {
                 removeTempt(file.tempFilePath);
             },
         );
-        // console.log(uploadFiles);
+
         return {
             public_id: uploadFiles.public_id,
             url: uploadFiles.url

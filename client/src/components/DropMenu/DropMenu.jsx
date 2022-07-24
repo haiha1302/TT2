@@ -15,11 +15,10 @@ const titleModal = {
 }
 
 const DropMenu = (props) => {
-    console.log(props.user);
     return (
         <div className="modal-user" >
             {
-                props.user === true ?
+                props.isAuth === true ?
                 <>
                     {
                         titleModal.userTrue.map(data => <DropdownItem key={data.id} path={data.path} title={data.title}/>)

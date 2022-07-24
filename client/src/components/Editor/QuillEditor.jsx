@@ -410,7 +410,7 @@ class QuillEditor extends React.Component {
         syntax: false,
         toolbar: {
             container: '#toolbar',
-            //id ="toorbar"
+            id: "toorbar",
             handlers: {
                 insertImage: this.imageHandler,
                 insertVideo: this.videoHandler,
@@ -418,10 +418,6 @@ class QuillEditor extends React.Component {
                 insertPoll: this.pollHandler,
             },
         },
-        // imageResize: {
-        //     parchment: Quill.import('parchment'),
-        //     modules: ['Rezise', 'DisplaySize']
-        // }
     };
 
     formats = [

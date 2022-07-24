@@ -8,19 +8,29 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai'
 import '../../sass/form.scss'
 
 const FormLogin = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [data, setData] = useState({
+        email: '',
+        password: ''
+    })
     const [hidePassword, setHidePassword] = useState(true)
     const dispatch = useDispatch()
     const navigate = useNavigate()
+
+    const onChangeData = e => {
+        const { name, value } = e.target
+        setData({
+            ...data,
+            [name]: value
+        })
+    }
 
     const onLoginSubmit = async e => {
         e.preventDefault()
 
         try {
             dispatch(loginUser({
-                email: email,
-                password: password
+                email: data.email,
+                password: data.password
             }))
 
             navigate('/', { replace: true })
@@ -39,18 +49,20 @@ const FormLogin = () => {
                             <FormInput
                                 type="email"
                                 placeholder="Email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                value={data.email}
+                                onChange={onChangeData}
                                 inputMode='none'
+                                name='email'
                             />
                         </div>
                         <div className="field input-field">
                             <FormInput
                                 type={hidePassword === true ? 1 : 0}
                                 placeholder="Mật khẩu"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+                                value={data.password}
+                                onChange={onChangeData}
                                 inputMode='none'
+                                name='password'
                             />
                             <div onClick={() => setHidePassword(!hidePassword)} className='eye-icon'>
                                 {

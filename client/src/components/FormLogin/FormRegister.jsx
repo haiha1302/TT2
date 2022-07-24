@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom'; 
-import http from '../../utils/http';
 import ButtonSubmit from '../ButtonSubmit/ButtonSubmit';
 import FormInput from '../FormInput/FormInput';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai'
@@ -9,25 +8,35 @@ import { registerUser } from '../../redux/slice/userSlice';
 import '../../sass/form.scss';
 
 const FormRegister = () => {
-    const [email, setEmail] = useState('');
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [passwordAgain, setPasswordAgain] = useState('')
-    const [dateOfBirth, setDateOfBirth] = useState('');
+    const [data, setData] = useState({
+        email: '',
+        username: '',
+        password: '',
+        passwordAgain: '',
+        dateOfBirth: ''
+    })
     const [hidePass, setHidePass] = useState(true)
     const [hidePassAgain, setHidePassAgain] = useState(true)
     const navigate = useNavigate()
     const dispatch = useDispatch()
+
+    const onChangeData = e => {
+        const { name, value } = e.target
+        setData({
+            ...data,
+            [name]: value
+        })
+    }
 
     const onRegisterSubmit = async (e) => {
         e.preventDefault();
 
         try {
             dispatch(registerUser({
-                email: email,
-                username: username,
-                password: password,
-                dateOfBirth: dateOfBirth,
+                email: data.email,
+                username: data.username,
+                password: data.password,
+                dateOfBirth: data.dateOfBirth,
             }))
             navigate('/validate-otp', { replace: true })
         } catch (error) {
@@ -45,26 +54,29 @@ const FormRegister = () => {
                             <FormInput
                                 type="email"
                                 placeholder="Email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                value={data.email}
+                                onChange={onChangeData}
+                                name='email'
                             />
                         </div>
                         <div className="field input-field">
                             <FormInput
                                 type="text"
                                 placeholder="Tên"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
+                                value={data.username}
+                                onChange={onChangeData}
                                 inputMode='none'
+                                name='username'
                             />
                         </div>
                         <div className="field input-field">
                             <FormInput
                                 type={hidePass === true ? 1 : 0}
                                 placeholder="Mật khẩu"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+                                value={data.password}
+                                onChange={onChangeData}
                                 inputMode='none'
+                                name='password'
                             />
                             <div onClick={() => setHidePass(!hidePass)} className='eye-icon'>
                                 {
@@ -76,9 +88,10 @@ const FormRegister = () => {
                             <FormInput
                                 type={hidePassAgain === true ? 1 : 0}
                                 placeholder="Nhập lại mật khẩu"
-                                value={passwordAgain}
-                                onChange={(e) => setPasswordAgain(e.target.value)}
+                                value={data.passwordAgain}
+                                onChange={onChangeData}
                                 inputMode='none'
+                                name='passwordAgain'
                             />
                              <div onClick={() => setHidePassAgain(!hidePassAgain)} className='eye-icon'>
                                 {
@@ -90,9 +103,10 @@ const FormRegister = () => {
                             <FormInput
                                 type="date"
                                 placeholder="Ngày sinh"
-                                value={dateOfBirth}
-                                onChange={(e) => setDateOfBirth(e.target.value)}
+                                value={data.dateOfBirth}
+                                onChange={onChangeData}
                                 inputMode='none'
+                                name='dateOfBirth'
                             />
                         </div>
                         <div className='field button-field'>

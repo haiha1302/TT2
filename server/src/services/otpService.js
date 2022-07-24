@@ -1,4 +1,3 @@
-// const OTP = require('../models/otpModel');
 const bcrypt = require('bcrypt');
 const { DB } = require('../database')
 

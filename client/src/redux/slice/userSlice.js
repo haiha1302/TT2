@@ -1,6 +1,11 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import http from '../../utils/http'
 
+export const checkUser = createAsyncThunk('/user/checkUser', async () => {
+    const res = await http.get('/user/check-user')
+    return res.data
+})
+
 export const registerUser = createAsyncThunk('/userSlice/register', async (dataUser) => {
     const res = await http.post('/user/register', dataUser)
     return res.data
@@ -16,12 +21,19 @@ export const loginUser = createAsyncThunk('/userSlice/login', async (dataLogin) 
     return res.data
 })
 
+export const getProfileUser = createAsyncThunk('/userSlice/profile', async (idUser) => {
+    console.log('thunk', idUser);
+    const res = await http.post('/user/profile', idUser)
+    return res.data
+})
+
 const userSlice = createSlice({
     name: 'User',
     initialState: {
         email: [],
         verify: [],
-        infoUserLogin: []
+        inforUserLogin: null,
+        profileUser: null
     },
     extraReducers: {
         [registerUser.fulfilled]: (state, action) => {
@@ -33,7 +45,15 @@ const userSlice = createSlice({
         },
 
         [loginUser.fulfilled]: (state, action) => {
-            state.infoUserLogin = action.payload
+            state.inforUserLogin = action.payload
+        },
+
+        [checkUser.fulfilled]: (state, action) => {
+            state.inforUserLogin = action.payload
+        },
+
+        [getProfileUser.fulfilled]: (state, action) => {
+            state.profileUser = action.payload
         }
     }
 })

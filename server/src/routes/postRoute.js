@@ -7,11 +7,11 @@ const router = require('express').Router();
 router.post('/create', postsController.createPost);
 
 router.post('/uploadfiles', postsController.uploadFiles);
-// router.get("/all", getAllPost);
+router.get("/all-posts", postsController.getAllPosts);
 
 router
     .route('/:id')
-    .get(Auth.auth, postsController.postDetail)
+    .post(postsController.postDetail)
     .put(Auth.auth, Auth.authEdit, postsController.updatePost)
     .delete(Auth.auth, Auth.authEdit, postsController.deletePost);
 

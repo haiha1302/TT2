@@ -1,59 +1,88 @@
 import { useRef, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { checkUser } from '../../redux/slice/userSlice';
 import Navbar from './Navbar';
+import DropMenu from '../DropMenu/DropMenu';
+import { noAvatar } from '../../utils/contants';
 import * as AiIcons from 'react-icons/ai';
 import * as BiIcons from 'react-icons/bi';
-import DropMenu from '../DropMenu/DropMenu';
 
 const Header = () => {
-    const [open, setOpen] = useState(false)
-    const dataUserLogin = useSelector(state => state.User.infoUserLogin)
-    const currentUser = dataUserLogin.user ? true : false
+    const [open, setOpen] = useState(false);
+    const currentUser = useSelector((state) => state.User.inforUserLogin);
+    const isAuth = currentUser ? true : false;
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
     const scrollRef = useRef(null);
+
+    useEffect(() => {
+        dispatch(checkUser());
+    }, [isAuth, dispatch]);
 
     useEffect(() => {
         window.addEventListener('scroll', () => {
             if (window.scrollY > 0) {
-                scrollRef.current.classList.add('sticky')
+                scrollRef.current.classList.add('sticky');
             } else {
-                scrollRef.current.classList.remove('sticky')
+                scrollRef.current.classList.remove('sticky');
             }
-        })
+        });
         return () => {
-            window.removeEventListener('scroll', () => {})
-        }
-    })
+            window.removeEventListener('scroll', () => {});
+        };
+    });
 
     return (
         <header>
             <div className="header" ref={scrollRef}>
                 <Navbar />
-                <form>
-                    <input type="text" placeholder='Search...' />
+                <div className="logo">
+                    <img
+                        src="https://cdn-icons-png.flaticon.com/512/4922/4922073.png"
+                        alt="logo"
+                        className="logo-img"
+                    />
+                    <span>BlogApp</span>
+                </div>
+                {/* <form>
+                    <input type="text" placeholder="Search..." />
                     <span>
                         <AiIcons.AiOutlineSearch />
                     </span>
-                </form>
-                <nav>
-                    content
-                </nav>
-                <div onClick={() => setOpen(!open)}>
-                    {
-                        currentUser === true ?
-                        <>
-                            {dataUserLogin.user?.username}
-                            {open === true ? <DropMenu user={currentUser} dataUserLogin={dataUserLogin} /> : <></>}
-                        </>
-                        :
+                </form> */}
+                <div
+                    className="header-blank header-nav"
+                    // onClick={() => {
+                    //     navigate('/', { replace: true });
+                    // }}
+                >
+                    <NavLink to={'/'}>
+                    Trang chủ
+
+                    </NavLink>
+                </div>
+                <div onClick={() => setOpen(!open)} className="header-blank">
+                    {isAuth === true ? (
+                        <div className="header-user">
+                            <img
+                                src={currentUser.avatar ? currentUser.avatar : noAvatar}
+                                alt={currentUser?.username}
+                                className="header-avatar"
+                            />
+                            {currentUser?.username}
+                            {open === true ? <DropMenu isAuth={isAuth} dataUserLogin={currentUser} /> : <></>}
+                        </div>
+                    ) : (
                         <>
                             <BiIcons.BiUserCircle />
-                            {open === true ? <DropMenu user={dataUserLogin} /> : <></>}
+                            {open === true ? <DropMenu user={currentUser} /> : <></>}
                         </>
-                    }
+                    )}
                 </div>
             </div>
         </header>
-    )
-}
+    );
+};
 
-export default Header
+export default Header;

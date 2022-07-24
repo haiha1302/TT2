@@ -1,34 +1,28 @@
 import React, { useState } from 'react';
 import * as AiIcons from 'react-icons/ai';
 import * as BiIcons from 'react-icons/bi';
+import { Link, useNavigate } from 'react-router-dom';
+import './post.css';
 
-const Post = () => {
-  const [like, setLike] = useState(false);
-  return (
-    <div className='post'>
-      <div className="post_user">
-        <div className="post_user_avatar">
-          <img src="https://billboardvn.vn/wp-content/uploads/2019/04/Ava-Max-2019-cr-Lauren-Dunn-billboard-1548.jpg" alt="" />
-        </div>
-        <div className="post_user_name">
-          <span>Hieu</span>
-        </div>
-      </div>
-      <div className="post_content">
-        <img src="https://billboardvn.vn/wp-content/uploads/2019/04/Ava-Max-2019-cr-Lauren-Dunn-billboard-1548.jpg" alt="" />
-        <div className='emotion'>
-          <span onClick={() => setLike(!like)}>
-            {
-              like ? <AiIcons.AiTwotoneLike style={{ color: "rgb(59 130 246)", }} /> : <BiIcons.BiLike />
-            }
-          </span>
-          <span>
-            <BiIcons.BiComment />
-          </span>
-        </div>
-      </div>
-    </div>
-  )
-}
+const Post = ({ post }) => {
+    return (
+        <div className="post">
+            <Link to={`/post/${post._id}`} className="link">
+                {post.photo && <img className="postImg" src={post.photo} alt="" />}
 
-export default Post
+                <div className="postInfo">
+                    <div className="postCats">
+                        {post?.categories?.map((c) => (
+                            <span className="postCat">{c.name}</span>
+                        ))}
+                    </div>
+                    <span className="postTitle">{post.title}</span>
+                    <hr />
+                </div>
+                <div className="postDesc" dangerouslySetInnerHTML={{ __html: post.content }} />
+            </Link>
+        </div>
+    );
+};
+
+export default Post;

@@ -15,6 +15,50 @@
     right: 0;
     z-index: 999999;
     transition: 0.5s;
+    cursor: pointer;
+
+    .header-nav {
+        padding: 10px 20px;
+    }
+
+    .header-blank {
+        border-radius: 40px;
+        background-color: rgb(241 245 249);
+
+        .header-user {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 8px;
+
+            .header-avatar {
+                border-radius: 40%;
+                max-width: 32px;
+                padding-right: 5px;
+            }
+        }
+    }
+
+    .header-blank:hover {
+        color: $textGrey;
+        background-color: #F5F7D2;
+    }
+
+    .logo {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+
+        .logo-img {
+            max-width: 40px;
+        }
+
+        span {
+            font-size: x-large;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+    }
 
     form {
         position: relative;
@@ -89,7 +133,7 @@
                 top: 50%;
                 right: 0;
             }
-            
+
             span:nth-child(1) {
                 transform: rotate(45deg) translate(var(--n_gap), var(--n_gap));
             }
@@ -147,4 +191,6 @@
         color: $textColor;
         padding: 15px 15px 15px 15px;
     }
+
+    
 }

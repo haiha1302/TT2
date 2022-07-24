@@ -43,7 +43,7 @@ const UserServices = {
                 message: 'Password must be at least 8 characters',
             };
         }
-        if (checkExistedUser?.email === null) {
+        if (checkExistedUser?.email) {
             return {
                 code: 400,
                 message: 'This email is already in user!',
@@ -58,7 +58,7 @@ const UserServices = {
             specialChars: false,
         });
         console.log('OTP is:', otp);
-        // sendOTP({ email, otp: otp });
+        sendOTP({ email, otp: otp });
         return {
             code: 200,
             element: await OTPServices.insertOtp({
@@ -72,7 +72,7 @@ const UserServices = {
         };
     },
 
-    loginUser: async ({ email, password, res }) => {
+    loginUser: async ({ email, password }) => {
         if (!(email || password)) {
             return {
                 code: 400,
@@ -80,20 +80,14 @@ const UserServices = {
             };
         }
         const user = await DB.users.findOne({ email: email });
-        // console.log(user)
         const checkPassword = bcrypt.compare(user.password, password);
+
         if (!checkPassword) {
             return {
                 code: 400,
                 message: 'username or password is not correct',
             };
         }
-
-        const token = JWTServices.createToken(user.username);
-        res.cookie('token', token, {
-            httpOnly: true,
-            expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-        });
 
         return {
             code: 200,
@@ -136,6 +130,7 @@ const UserServices = {
                     email: email,
                     username: lastOtp.username,
                     password: lastOtp.password,
+                    avatar: null,
                     dateOfBirth: lastOtp.dateOfBirth,
                     create_date: new Date()
                 }

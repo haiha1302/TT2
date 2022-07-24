@@ -1,64 +1,76 @@
 const Post = require('../models/postModel');
 const Comment = require('../models/postComment');
 const Like = require('../models/postLike');
-const uploadServices = require('../services/uploadServices')
+const uploadServices = require('../services/uploadServices');
+const { DB } = require('../database');
+const ObjectId = require('mongodb').ObjectID;
 
 const postsController = {
     createPost: async (req, res) => {
         try {
-            req.body.user = req.user.id;
-            const post = await Post.create(req.body);
-            res.status(201).json({ success: true, post });
+            const dataPost = await DB.posts.insertOne(req.body);
+
+            res.status(201).json(dataPost);
         } catch (error) {
             res.status(500).json({ message: error.message });
         }
     },
 
+    getAllPosts: async (req, res) => {
+        try {
+            const allPosts = await DB.posts.find({}).toArray();
+
+            res.status(200).json(allPosts);
+        } catch (err) {
+            res.status(500).json({ msg: err.message });
+        }
+    },
+
     uploadFiles: async (req, res) => {
         try {
-            const file = req.files.file
+            const file = req.files.file;
 
-            const upload = await uploadServices(file)
-            
+            const upload = await uploadServices(file);
+
             res.status(200).json({
                 success: true,
                 fileName: req.files.file.name,
                 public_id: upload.public_id,
-                url: upload.url
-            })
-        } catch(err) {
-            res.status(500).json({ message: err.message })
+                url: upload.url,
+            });
+        } catch (err) {
+            res.status(500).json({ message: err.message });
         }
     },
 
     postDetail: async (req, res) => {
-        const post = await Post.findById(req.params.id);
+        const post = await DB.posts.findOne({ _id: ObjectId(req.params.id) });
+
         if (!post) {
             return res.status(500).json({ message: 'Post not found' });
         }
+
         res.status(200).json({ success: true, post });
     },
 
     updatePost: async (req, res) => {
-        let post = await Post.findById(req.params.id);
-        if (!post) {
-            return res.status(500).json({ message: 'Post not found' });
-        }
-        post = await Post.findByIdAndUpdate(req.params.id, req.body, {
-            new: true,
-            runValidators: true,
-            useFindAndModify: true,
-        });
-        res.status(200).json({ success: true, post });
+        const post = await DB.posts.findOne({ _id: ObjectId(req.params.id) });
+
+        if (!post) return res.status(500).json({ message: 'Post not found' });
+
+        const postUpdate = await DB.posts.updateOne({ _id: ObjectId(req.params.id) }, { $set: req.body });
+
+        res.status(200).json({ success: true, postUpdate });
     },
 
     deletePost: async (req, res) => {
-        let post = await Post.findById(req.params.id);
-        if (!post) {
-            return res.status(500).json({ message: 'Post not found' });
-        }
-        post = await Post.findByIdAndDelete(req.params.id);
-        res.status(200).json({ message: 'Delete success' });
+        const post = await DB.posts.findOne({ _id: ObjectId(req.params.id) });
+
+        if (!post) return res.status(500).json({ message: 'Post not found' });
+
+        const deletePost = await DB.posts.deleteOne({ _id: ObjectId(req.params.id) });
+
+        res.status(200).json({ message: 'Delete success', deletePost });
     },
 
     commentPost: async (req, res) => {
@@ -76,7 +88,7 @@ const postsController = {
                 comment: req.body.comment,
             });
             let commentData = await newComment.save();
-    
+
             await Post.updateOne(
                 {
                     _id: post_id,
@@ -87,7 +99,7 @@ const postsController = {
                     },
                 },
             );
-    
+
             return res.status(200).json({
                 data: commentData,
             });
@@ -130,7 +142,7 @@ const postsController = {
                     await Like.deleteOne({
                         _id: isLike._id,
                     });
-    
+
                     await Post.updateOne(
                         {
                             _id: isLike.post_id,
@@ -147,7 +159,7 @@ const postsController = {
         } catch (error) {
             console.log(error);
         }
-    }
+    },
 };
 
-module.exports = { postsController }
+module.exports = { postsController };

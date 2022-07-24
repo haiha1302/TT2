@@ -15,6 +15,7 @@ const connectToMongo = async () => {
         const databasePosts = client.db('Posts')
 
         DB.users = databaseUsers.collection('users')
+        DB.profiles = databaseUsers.collection('profiles')
         DB.otps = databaseUsers.collection('otps')
 
         DB.posts = databasePosts.collection('posts')
