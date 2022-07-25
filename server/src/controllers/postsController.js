@@ -26,6 +26,16 @@ const postsController = {
         }
     },
 
+    getListPostsForUser: async (req, res) => {
+        try {
+            const listPosts = await DB.posts.find({ author_id: req.body.author_id }).toArray();
+
+            res.status(200).json(listPosts);
+        } catch (err) {
+            res.status(500).json({ msg: err.message });
+        }
+    },
+
     uploadFiles: async (req, res) => {
         try {
             const file = req.files.file;

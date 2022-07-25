@@ -1,45 +1,53 @@
 import './settings.css';
 // import Sidebar from "../../components/sidebar/Sidebar";
-import { useContext, useState } from 'react';
-// import { Context } from "../../context/Context";
+import { useState } from 'react';
 import { FaRegUserCircle } from 'react-icons/fa';
-import axios from 'axios';
-import { useSelector } from 'react-redux';
-import { noAvatar } from '../utils/contants'
+import { useDispatch, useSelector } from 'react-redux';
+import { noAvatar } from '../utils/contants';
+import { updateUserAvatar, updateInforUser } from '../redux/slice/userSlice'
 
-export default function Settings() {
+const Settings = () => {
+    const user = useSelector((state) => state.User.inforUserLogin);
+    // console.log(user)
+    const [updateInfor, setUpdateInfor] = useState({
+        userId: user._id,
+        email: user.email,
+        username: user.username
+    }) 
     const [file, setFile] = useState(null);
-    const [username, setUsername] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [update, setUpdate] = useState(false);
     const [success, setSuccess] = useState(false);
-    const user = useSelector(state => state.User.inforUserLogin)
-    // const { user, dispatch } = useContext(Context);
-    const PF = 'http://localhost:5000/images/';
+    const dispatch = useDispatch()
+
+    const onChangeInput = e => {
+        const { name, value } = e.target
+        setUpdateInfor({
+            ...updateInfor,
+            [name]: value
+        })
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        // dispatch({ type: "UPDATE_START" });
-        const updatedUser = {
-            // userId: user._id,
-            username,
-            email,
-            password,
-        };
+
         if (file) {
             const data = new FormData();
             const filename = Date.now() + file.name;
-            data.append('name', filename);
             data.append('file', file);
-            updatedUser.profilePic = filename;
+            data.append('userId', user._id)
+            data.append('filename', filename);
+
             try {
-                await axios.post('/upload', data);
-            } catch (err) {}
+                dispatch(updateUserAvatar(data))
+            } catch (err) {
+                console.log(err.message)
+            }
         }
+
         try {
-            // const res = await axios.put("/users/" + user._id, updatedUser);
-            setSuccess(true);
-            // dispatch({ type: "UPDATE_SUCCESS", payload: res.data });
+            dispatch(updateInforUser(updateInfor))
+            setSuccess(!success)
+            setUpdate(!update)
         } catch (err) {
             // dispatch({ type: "UPDATE_FAILURE" });
         }
@@ -48,38 +56,48 @@ export default function Settings() {
         <div className="settings">
             <div className="settingsWrapper">
                 <div className="settingsTitle">
-                    <span className="settingsUpdateTitle">Update Your Account</span>
-                    <span className="settingsDeleteTitle">Delete Account</span>
+                    <span className="settingsUpdateTitle">Tài khoản người dùng</span>
+                    <span className="settingsDeleteTitle" onClick={() => setUpdate(!update)}>
+                        {update ? 'Hủy cập nhật' : 'Cập nhật thông tin'}
+                    </span>
                 </div>
                 <form className="settingsForm" onSubmit={handleSubmit}>
                     <label>Profile Picture</label>
                     <div className="settingsPP">
                         <img src={file ? URL.createObjectURL(file) : user?.avatar ? user?.avatar : noAvatar} alt="" />
-                        <label htmlFor="fileInput">
-                            {/* <i className="settingsPPIcon far fa-user-circle"></i> */}
-                            <FaRegUserCircle size={22} className="settingsPPIcon" />
-                        </label>
-                        <input
-                            type="file"
-                            id="fileInput"
-                            style={{ display: 'none' }}
-                            onChange={(e) => setFile(e.target.files[0])}
-                        />
+                        {update ? (
+                            <>
+                                <label htmlFor="fileInput">
+                                    {/* <i className="settingsPPIcon far fa-user-circle"></i> */}
+                                    <FaRegUserCircle size={22} className="settingsPPIcon" />
+                                </label>
+                                <input
+                                    type="file"
+                                    id="fileInput"
+                                    style={{ display: 'none' }}
+                                    onChange={(e) => setFile(e.target.files[0])}
+                                />
+                            </>
+                        ) : (
+                            <></>
+                        )}
                     </div>
                     <label>Username</label>
                     <input
                         type="text"
                         placeholder={user?.username}
-                        onChange={(e) => setUsername(e.target.value)}
+                        onChange={onChangeInput}
+                        disabled={update ? '' : 'disabled'}
+                        name='username'
                     />
                     <label>Email</label>
                     <input
                         type="email"
                         placeholder={user?.email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        onChange={onChangeInput}
+                        disabled={update ? '' : 'disabled'}
+                        name='email'
                     />
-                    <label>Password</label>
-                    <input type="password" onChange={(e) => setPassword(e.target.value)} />
                     <button className="settingsSubmit" type="submit">
                         Update
                     </button>
@@ -94,3 +112,5 @@ export default function Settings() {
         </div>
     );
 }
+
+export default Settings

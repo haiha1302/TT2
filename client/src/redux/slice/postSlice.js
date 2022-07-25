@@ -12,16 +12,22 @@ export const getAllPosts = createAsyncThunk('postSlice/getAllPosts', async () =>
 });
 
 export const getDetailPost = createAsyncThunk('/postSlice/getDetailPosts', async (idPost) => {
-    const res = await http.post(`/posts/${idPost}`)
-    return res.data
-})
+    const res = await http.post(`/posts/${idPost}`);
+    return res.data;
+});
+
+export const getListPostsByUser = createAsyncThunk('/postSlice/getListPostByUser', async (idUser) => {
+    const res = await http.post(`/posts/list-posts`, { author_id: idUser });
+    return res.data;
+});
 
 const postSlice = createSlice({
     name: 'Posts',
     initialState: {
         postId: null,
         posts: [],
-        detailPost: {}
+        detailPost: {},
+        listPostsByUser: [],
     },
     extraReducers: {
         [getAllPosts.fulfilled]: (state, action) => {
@@ -29,8 +35,12 @@ const postSlice = createSlice({
         },
 
         [getDetailPost.fulfilled]: (state, action) => {
-            state.detailPost = action.payload
-        }
+            state.detailPost = action.payload;
+        },
+
+        [getListPostsByUser.fulfilled]: (state, action) => {
+            state.listPostsByUser = action.payload;
+        },
     },
 });
 

@@ -1,8 +1,8 @@
+const { DB } = require('../database');
+const ObjectId = require('mongodb').ObjectId;
 const { UserServices } = require('../services/userService');
-// const { OTPServices } = require('../services/otpService');
 const { JWTServices } = require('../services/jwtServices');
-// const User = require('../models/userModel');
-const { DB } = require('../database')
+const uploadServices = require('../services/uploadServices');
 
 const UsersController = {
     //register
@@ -26,7 +26,7 @@ const UsersController = {
     verifyAcc: async (req, res) => {
         const { email, otp } = req.body;
         const { code, element, message } = await UserServices.verifyOtp({ email, otp });
-        
+
         return res.status(code).json({
             code,
             element,
@@ -39,21 +39,27 @@ const UsersController = {
         const { email, password } = req.body;
         const { code, message, user } = await UserServices.loginUser({ email, password, res });
 
-        const token = JWTServices.createToken(user);
+        if (!user) {
+            res.status(code).json({
+                message,
+            });
+        } else {
+            const token = JWTServices.createToken(user);
 
-        res.cookie('access-token', token, {
-            httpOnly: true,
-            secure: false,
-            // sameSite: 'none',
-            maxAge: 24 * 60 * 60 * 1000
-            // expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-        });
+            res.cookie('access-token', token, {
+                httpOnly: true,
+                secure: false,
+                // sameSite: 'none',
+                maxAge: 24 * 60 * 60 * 1000,
+                // expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+            });
 
-        res.status(code).json({
-            code,
-            message,
-            user
-        });
+            res.status(code).json({
+                code,
+                message,
+                user,
+            });
+        }
     },
 
     //logout
@@ -63,14 +69,48 @@ const UsersController = {
     },
 
     checkUser: async (req, res) => {
-        const accessToken = req.cookies['access-token']
+        const accessToken = req.cookies['access-token'];
 
-        if (!accessToken) res.status(401).send('JWT is missing')
+        if (!accessToken) res.status(401).send('JWT is missing');
         else {
-            const decodeToken = await JWTServices.validateToken(accessToken)
-            
-            req.authenticated = true
-            res.status(decodeToken.status).json(decodeToken)
+            const decodeToken = await JWTServices.validateToken(accessToken);
+
+            req.authenticated = true;
+            res.status(decodeToken.status).json(decodeToken);
+        }
+    },
+
+    uploadAvatar: async (req, res) => {
+        try {
+            const file = req.files.file;
+
+            const user = await DB.users.findOne({ _id: ObjectId(req.body.userId) });
+
+            if (!user) res.status(400).json({ msg: 'User is not found' });
+            else {
+                const upload = await uploadServices(file);
+
+                const fileUpdate = {
+                    userId: req.body.userId,
+                    avatar: upload.url,
+                };
+
+                if (upload.url) {
+                    const updateStatus = await UserServices.updateAvatar(fileUpdate);
+                    res.status(200).json(updateStatus);
+                }
+            }
+        } catch (err) {
+            res.status(500).json({ msg: err.message });
+        }
+    },
+
+    updateInfor: async (req, res) => {
+        console.log('update-info', req.body);
+        try {
+            const updateInfor = await DB.users.updateOne({ _id: ObjectId(req.body.userId) }, { $set: req.body });
+        } catch (err) {
+            res.status(500).json({ msg: err.message });
         }
     },
 
@@ -91,5 +131,4 @@ const UsersController = {
     // }
 };
 
-module.exports = { UsersController }
-
+module.exports = { UsersController };

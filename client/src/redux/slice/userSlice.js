@@ -21,9 +21,18 @@ export const loginUser = createAsyncThunk('/userSlice/login', async (dataLogin) 
     return res.data
 })
 
-export const getProfileUser = createAsyncThunk('/userSlice/profile', async (idUser) => {
-    console.log('thunk', idUser);
-    const res = await http.post('/user/profile', idUser)
+export const updateUserAvatar = createAsyncThunk('/userSlice/updateAvatar', async (data) => {
+    const res = await http.post('/user/upload-avatar', data)
+    return res.data
+})
+
+export const updateInforUser = createAsyncThunk('/userSlice/updateInfor', async (data) => {
+    const res = await http.put('/user/update-infor', data)
+    return res.data
+})
+
+export const logout = createAsyncThunk('/userSlice/logout', async () => {
+    const res = await http.post('/user/logout')
     return res.data
 })
 
@@ -33,7 +42,9 @@ const userSlice = createSlice({
         email: [],
         verify: [],
         inforUserLogin: null,
-        profileUser: null
+        updateAvatar: null,
+        isLogin: false,
+        changeAvatarSuccess: null
     },
     extraReducers: {
         [registerUser.fulfilled]: (state, action) => {
@@ -50,10 +61,16 @@ const userSlice = createSlice({
 
         [checkUser.fulfilled]: (state, action) => {
             state.inforUserLogin = action.payload
+            state.isLogin = true
         },
 
-        [getProfileUser.fulfilled]: (state, action) => {
-            state.profileUser = action.payload
+        [updateUserAvatar.fulfilled]: (state, action) => {
+            state.changeAvatarSuccess = action.payload
+        },
+
+        [logout.fulfilled]: (state, action) => {
+            state.inforUserLogin = null
+            state.isLogin = false
         }
     }
 })

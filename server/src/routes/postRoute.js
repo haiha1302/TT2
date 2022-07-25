@@ -9,6 +9,8 @@ router.post('/create', postsController.createPost);
 router.post('/uploadfiles', postsController.uploadFiles);
 router.get("/all-posts", postsController.getAllPosts);
 
+router.post('/list-posts', postsController.getListPostsForUser)
+
 router
     .route('/:id')
     .post(postsController.postDetail)

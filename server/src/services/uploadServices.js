@@ -1,5 +1,4 @@
 const cloudinary = require('cloudinary').v2;
-const { v4: uuidv4 } = require('uuid');
 const fs = require('fs');
 
 cloudinary.config({
@@ -10,8 +9,6 @@ cloudinary.config({
 
 const uploadServices = async file => {
     try {
-        const postId = uuidv4()
-
         const uploadFiles = await cloudinary.uploader.upload(
             file.tempFilePath,
             {

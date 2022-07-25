@@ -1,48 +1,49 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { loginUser } from '../../redux/slice/userSlice';
 import FormInput from '../FormInput/FormInput';
 import ButtonSubmit from '../ButtonSubmit/ButtonSubmit';
-import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai'
-import '../../sass/form.scss'
+import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
+import '../../sass/form.scss';
 
 const FormLogin = () => {
     const [data, setData] = useState({
         email: '',
-        password: ''
-    })
-    const [hidePassword, setHidePassword] = useState(true)
-    const dispatch = useDispatch()
-    const navigate = useNavigate()
+        password: '',
+    });
+    const [hidePassword, setHidePassword] = useState(true);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
-    const onChangeData = e => {
-        const { name, value } = e.target
+    const onChangeData = (e) => {
+        const { name, value } = e.target;
         setData({
             ...data,
-            [name]: value
-        })
-    }
+            [name]: value,
+        });
+    };
 
-    const onLoginSubmit = async e => {
-        e.preventDefault()
+    const onLoginSubmit = async (e) => {
+        e.preventDefault();
 
         try {
-            dispatch(loginUser({
-                email: data.email,
-                password: data.password
-            }))
-
+            dispatch(
+                loginUser({
+                    email: data.email,
+                    password: data.password,
+                }),
+            );
             navigate('/', { replace: true })
-        } catch(error) {
+        } catch (error) {
             console.log(error.message);
         }
-    }
+    };
 
     return (
-        <div className='container-form'>
-            <div className='form'>
-                <div className='form-content'>
+        <div className="container-form">
+            <div className="form">
+                <div className="form-content">
                     <header>Đăng nhập tài khoản</header>
                     <form onSubmit={onLoginSubmit}>
                         <div className="field input-field">
@@ -51,8 +52,8 @@ const FormLogin = () => {
                                 placeholder="Email"
                                 value={data.email}
                                 onChange={onChangeData}
-                                inputMode='none'
-                                name='email'
+                                inputMode="none"
+                                name="email"
                             />
                         </div>
                         <div className="field input-field">
@@ -61,35 +62,44 @@ const FormLogin = () => {
                                 placeholder="Mật khẩu"
                                 value={data.password}
                                 onChange={onChangeData}
-                                inputMode='none'
-                                name='password'
+                                inputMode="none"
+                                name="password"
                             />
-                            <div onClick={() => setHidePassword(!hidePassword)} className='eye-icon'>
-                                {
-                                    hidePassword === true ? <AiOutlineEyeInvisible size={20} /> : <AiOutlineEye size={20} />
-                                }
+                            <div onClick={() => setHidePassword(!hidePassword)} className="eye-icon">
+                                {hidePassword === true ? (
+                                    <AiOutlineEyeInvisible size={20} />
+                                ) : (
+                                    <AiOutlineEye size={20} />
+                                )}
                             </div>
                         </div>
 
                         <div className="form-link">
-                            <Link to={'/'} className="forgot-pass">Quên mật khẩu?</Link>
+                            <Link to={'/'} className="forgot-pass">
+                                Quên mật khẩu?
+                            </Link>
                         </div>
 
-                        <div className='field button-field'>
-                            <ButtonSubmit event='Đăng nhập' />
+                        <div className="field button-field">
+                            <ButtonSubmit event="Đăng nhập" />
                         </div>
 
                         <div className="form-link">
-                            <span>Chưa có tài khoản? <Link to={'/register'} className="forgot-pass">Đăng ký</Link></span>
+                            <span>
+                                Chưa có tài khoản?{' '}
+                                <Link to={'/register'} className="forgot-pass">
+                                    Đăng ký
+                                </Link>
+                            </span>
                         </div>
                     </form>
                 </div>
 
-                <div className='line'></div>
+                <div className="line"></div>
 
                 <div className="media-options">
                     <Link to={'/'} className="field field-oauth">
-                        <img src='https://tinhte.vn/styles/tinhte2018/facebook.png' alt='' className='google-img' />
+                        <img src="https://tinhte.vn/styles/tinhte2018/facebook.png" alt="" className="google-img" />
                         <span>Đăng nhập bằng Facebook</span>
                     </Link>
 

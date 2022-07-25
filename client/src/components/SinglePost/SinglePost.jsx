@@ -1,19 +1,21 @@
-import { useContext, useEffect, useState } from 'react';
-import { useLocation } from 'react-router';
-import { Link, useParams } from 'react-router-dom';
-// import { Context } from '../../context/Context';
-import './singlePost.css';
-import http from '../utils/http';
+import { useEffect, useState } from 'react';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { getDetailPost } from '../redux/slice/portSlice';
+import { getDetailPost } from '../../redux/slice/postSlice';
+import ReactQuill from 'react-quill';
+import http from '../../utils/http';
+import './singlePost.css';
+import { FaEdit, FaTrashAlt } from 'react-icons/fa';
 
-export default function SinglePost() {
+const SinglePost = () => {
     const { id } = useParams();
     const post = useSelector((state) => state.Posts.detailPost.post);
+    const author_id = useSelector((state) => state.User.inforUserLogin?._id);
     const [title, setTitle] = useState('');
-    const [desc, setDesc] = useState('');
+    const [content, setContent] = useState('');
     const [updateMode, setUpdateMode] = useState(false);
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     useEffect(() => {
         dispatch(getDetailPost(id));
@@ -21,22 +23,23 @@ export default function SinglePost() {
 
     const handleDelete = async () => {
         try {
-            await http.delete(`/posts/${post._id}`, {
-                // data: { username: user.username },
-            });
-            window.location.replace('/');
-        } catch (err) {}
+            await http.delete(`/posts/${post._id}`);
+            navigate('/list-posts', { replace: true });
+        } catch (err) {
+            console.log(err.message)
+        }
     };
 
     const handleUpdate = async () => {
         try {
             await http.put(`/posts/${post._id}`, {
-                // username: user.username,
                 title,
-                desc,
+                content,
             });
             setUpdateMode(false);
-        } catch (err) {}
+        } catch (err) {
+            console.log(err.message)
+        }
     };
 
     return (
@@ -54,12 +57,14 @@ export default function SinglePost() {
                 ) : (
                     <h1 className="singlePostTitle">
                         {title}
-                        {/* {post.username === user?.username && (
+                        {post?.author_id === author_id && (
                             <div className="singlePostEdit">
-                                <i className="singlePostIcon far fa-edit" onClick={() => setUpdateMode(true)}></i>
-                                <i className="singlePostIcon far fa-trash-alt" onClick={handleDelete}></i>
+                                {/* <i className="singlePostIcon far fa-edit" onClick={() => setUpdateMode(true)}></i>
+                                <i className="singlePostIcon far fa-trash-alt" onClick={handleDelete}></i> */}
+                                <FaEdit className="singlePostIcon" onClick={() => setUpdateMode(true)} />
+                                <FaTrashAlt className="singlePostIcon" onClick={handleDelete} />
                             </div>
-                        )} */}
+                        )}
                     </h1>
                 )}
                 <div className="singlePostInfo">
@@ -69,14 +74,18 @@ export default function SinglePost() {
                             <b> {post?.author_name}</b>
                         </Link>
                     </span>
-                    {/* <span className="singlePostDate">{new Date(post.createdAt).toDateString()}</span> */}
+                    <span className="singlePostDate">{post?.createAt.slice(0, 16)}</span>
                 </div>
                 {updateMode ? (
-                    <textarea className="singlePostDescInput" value={desc} onChange={(e) => setDesc(e.target.value)} />
+                    <ReactQuill
+                        placeholder="Nhập nội dung của bạn"
+                        className="writeInput writeText"
+                        value={content}
+                        onChange={(value) => setContent(value)}
+                    />
                 ) : (
                     <>
-                        {/* <p className="singlePostDesc">{desc}</p> */}
-                        <div dangerouslySetInnerHTML={{ __html: desc }} />
+                        <div dangerouslySetInnerHTML={{ __html: post?.content }} />
                     </>
                 )}
                 {updateMode && (
@@ -87,4 +96,5 @@ export default function SinglePost() {
             </div>
         </div>
     );
-}
+};
+export default SinglePost;

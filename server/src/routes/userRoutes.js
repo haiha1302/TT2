@@ -12,8 +12,10 @@ route.post("/login", UsersController.login);
 
 route.post("/logout", UsersController.logout);
 
-// route.post("/profile", UsersController.userProfile);
+route.post('/upload-avatar', UsersController.uploadAvatar)
 
 route.get('/check-user', UsersController.checkUser)
+
+route.put('/update-infor', UsersController.updateInfor)
 
 module.exports = route;

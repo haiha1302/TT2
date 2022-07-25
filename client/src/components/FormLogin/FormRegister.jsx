@@ -5,6 +5,7 @@ import FormInput from '../FormInput/FormInput';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai'
 import { useDispatch } from 'react-redux'
 import { registerUser } from '../../redux/slice/userSlice';
+import { noAvatar } from '../../utils/contants'
 import '../../sass/form.scss';
 
 const FormRegister = () => {
@@ -37,6 +38,7 @@ const FormRegister = () => {
                 username: data.username,
                 password: data.password,
                 dateOfBirth: data.dateOfBirth,
+                // avatar: noAvatar
             }))
             navigate('/validate-otp', { replace: true })
         } catch (error) {

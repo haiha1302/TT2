@@ -1,55 +1,32 @@
 import { useState } from 'react';
-import ReactQuill, { Quill } from 'react-quill';
-import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-// import { createPost } from '../redux/slice/portSlice';
+import { useSelector } from 'react-redux';
 import QuillEditor from '../components/Editor/QuillEditor';
-// import ButtonSubmit from '../components/ButtonSubmit/ButtonSubmit';
-import '../sass/createPost.scss';
+import { FaPlus } from 'react-icons/fa';
 import http from '../utils/http';
-import './write.css';
-// import { GENERATE_ID } from '../redux/slice/portSlice';
+import '../sass/createPost.scss';
 
 const CreatePost = () => {
-    // const postId = uuidv4()
-    // console.log(postId);
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
-    const [imgUrl, setImgUrl] = useState('');
+    const [category, setCategory] = useState('');
     const [file, setFile] = useState(null);
     const author_infor = useSelector((state) => state.User.inforUserLogin);
     const navigate = useNavigate();
-    console.log(content);
-    // const dispatch = useDispatch();
+    const [files, setFiles] = useState([])
 
-    // const onEditorChange = (value) => {
-    //     setContent(value);
-    //     // console.log(post);
-    // };
+    const onChangeCats = (e) => {
+        setCategory(e.target.value);
+    };
 
-    // const onFilesChange = (files) => setFiles(files);
+    const onEditorChange = (value) => {
+        setContent(value);
+    };
 
-    // const onPostChange = (e) => {
-    //     const { name, value } = e.target;
-    //     setPost({
-    //         ...post,
-    //         [name]: value,
-    //     });
-    // };
+    const onFilesChange = (files) => {
+        setFiles(files)
+    };
 
-    // const onSubmitPost = (e) => {
-    //     e.preventDefault();
-
-    //     const variables = {
-    //         title: title,
-    //         content: content,
-    //         create_at: new Date(),
-    //         author_id: author_infor._id,
-    //         author_name: author_infor.username,
-    //     };
-
-    //     dispatch(createPost(variables));
-    // };
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -58,37 +35,35 @@ const CreatePost = () => {
             author_name: author_infor.username,
             title,
             content,
+            category,
             createAt: new Date().toString(),
         };
 
         if (file) {
             const data = new FormData();
             const filename = Date.now() + file.name;
-            // data.append('postId', postId);
             data.append('file', file);
+            data.append('filename', filename);
 
             try {
                 const urlImg = await http.post('/posts/uploadFiles', data);
-                // setImgUrl(urlImg.data.url)
                 newPost.photo = urlImg.data.url;
             } catch (err) {}
         }
 
         try {
             const res = await http.post('/posts/create', newPost);
-            console.log(res.data);
-            navigate(`/posts/${res.data.insertedId}`, { replace: true });
-            // window.location.replace('/posts/' + res.data.insertedId);
+            navigate(`/post/${res.data.insertedId}`, { replace: true });
         } catch (err) {}
     };
 
     return (
         <div className="write">
-            <img className="writeImg" src={file ? URL.createObjectURL(file) : null} alt="" />
+            {file && <img className="writeImg" src={file ? URL.createObjectURL(file) : null} alt="" />}
             <form className="writeForm" onSubmit={handleSubmit}>
                 <div className="writeFormGroup">
                     <label htmlFor="fileInput">
-                        <i className="writeIcon fas fa-plus"></i>
+                        <FaPlus className="writeIcon" />
                     </label>
                     <input
                         type="file"
@@ -105,79 +80,36 @@ const CreatePost = () => {
                     />
                 </div>
                 <div className="writeFormGroup">
-                    {/* <textarea
-                        placeholder="Tell your story..."
-                        type="text"
+                    {/* <ReactQuill
+                        placeholder="Nhập nội dung của bạn"
                         className="writeInput writeText"
-                        onChange={(e) => setContent(e.target.value)}
-                    ></textarea> */}
-                    {/* <QuillEditor
-                    placeholder={'Nhập nội dung tại đây'}
-                    // onEditorChange={onEditorChange}
-                    // onFilesChange={onFilesChange}
-                /> */}
-                    <ReactQuill placeholder="Nhapj gi do" value={content} onChange={(value) => setContent(value)} />
+                        value={content}
+                        onChange={(value) => setContent(value)}
+                    /> */}
+                    <QuillEditor
+                        placeholder={'Nhập nội dung của bạn...'}
+                        onEditorChange={onEditorChange}
+                        onFilesChange={onFilesChange}
+                    />
                 </div>
-                <button className="writeSubmit" type="submit">
-                    Publish
-                </button>
+                <div className="groupBtn">
+                    <div className="selectCats">
+                        <label>Chọn thể loại</label>
+                        <select className="selectInput" onChange={onChangeCats}>
+                            <option value={'Sport'}>Sport</option>
+                            <option value={'Food'}>Food</option>
+                            <option value={'Music'}>Music</option>
+                            <option value={'Life'}>Life</option>
+                            <option value={'Health'}>Health</option>
+                            <option value={'Diy'}>Diy</option>
+                        </select>
+                    </div>
+                    <button className="writeSubmit" type="submit">
+                        Publish
+                    </button>
+                </div>
             </form>
         </div>
-        // <div className="container-post">
-        //     {file && <img className="writeImg" src={URL.createObjectURL(file)} alt="" />}
-        //     <form className="writeForm" onSubmit={handleSubmit}>
-        //         <div className="writeFormGroup">
-        //             <label htmlFor="fileInput">
-        //                 <i className="writeIcon fas fa-plus"></i>
-        //             </label>
-        //             <input
-        //                 type="file"
-        //                 id="fileInput"
-        //                 style={{ display: 'none' }}
-        //                 onChange={(e) => setFile(e.target.files[0])}
-        //             />
-        //             <input
-        //                 type="text"
-        //                 placeholder="Title"
-        //                 className="writeInput"
-        //                 autoFocus={true}
-        //                 onChange={(e) => setTitle(e.target.value)}
-        //             />
-        //         </div>
-        //         <div className="writeFormGroup">
-
-        //             <textarea
-        //                 placeholder="Tell your story..."
-        //                 type="text"
-        //                 className="writeInput writeText"
-        //                 onChange={(e) => setContent(e.target.value)}
-        //             ></textarea>
-        //         </div>
-        //         <button className="writeSubmit" type="submit">
-        //             Publish
-        //         </button>
-        //     </form>
-        //     {/* <form onSubmit={onSubmitPost}>
-        //         <input
-        //             type={'text'}
-        //             placeholder="Tiêu đề bài viết"
-        //             value={title}
-        //             onChange={(e) => setTitle(e.target.value)}
-        //             required
-        //             name="title"
-        //         />
-
-        //         <QuillEditor
-        //             placeholder={'Nhập nội dung tại đây'}
-        //             onEditorChange={onEditorChange}
-        //             onFilesChange={onFilesChange}
-        //         />
-
-        //         <div className="submit-btn">
-        //             <ButtonSubmit event="Đăng bài" />
-        //         </div>
-        //     </form> */}
-        // </div>
     );
 };
 

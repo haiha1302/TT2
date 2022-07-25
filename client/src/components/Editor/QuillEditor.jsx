@@ -1,13 +1,13 @@
 import React from 'react';
 import ReactQuill, { Quill } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import http from '../../utils/http'
+import http from '../../utils/http';
 const __ISMSIE__ = navigator.userAgent.match(/Trident/i) ? true : false;
 
 const QuillClipboard = Quill.import('modules/clipboard');
 
 class Clipboard extends QuillClipboard {
-    getMetaTagElements = stringContent => {
+    getMetaTagElements = (stringContent) => {
         const el = document.createElement('div');
         el.innerHTML = stringContent;
         return el.getElementsByTagName('meta');
@@ -21,8 +21,7 @@ class Clipboard extends QuillClipboard {
         if (urlMatches.length > 0) {
             e.preventDefault();
             urlMatches.forEach((link) => {
-                http
-                    .get(link)
+                http.get(link)
                     .then((payload) => {
                         let title, image, url;
                         for (let node of this.getMetaTagElements(payload)) {
@@ -60,6 +59,7 @@ class ImageBlot extends BlockEmbed {
         imgTag.setAttribute('src', value.src);
         imgTag.setAttribute('alt', value.alt);
         imgTag.setAttribute('width', '50%');
+        imgTag.setAttribute('style', 'display: block; margin: 0 auto');
         return imgTag;
     }
 
@@ -80,6 +80,7 @@ class VideoBlot extends BlockEmbed {
             videoTag.setAttribute('title', value.title);
             videoTag.setAttribute('width', '50%');
             videoTag.setAttribute('controls', '');
+            videoTag.setAttribute('style', 'display: block; margin: 0 auto');
 
             return videoTag;
         } else {
@@ -267,7 +268,7 @@ class QuillEditor extends React.Component {
         }
     };
 
-    insertVideo = e => {
+    insertVideo = (e) => {
         e.stopPropagation();
         e.preventDefault();
 
@@ -280,7 +281,7 @@ class QuillEditor extends React.Component {
             };
             formData.append('file', file);
 
-            http.post('/posts/uploadfiles', formData, config).then(response => {
+            http.post('/posts/uploadfiles', formData, config).then((response) => {
                 if (response.data.success) {
                     const quill = this.reactQuillRef.getEditor();
                     quill.focus();
@@ -310,12 +311,12 @@ class QuillEditor extends React.Component {
         }
     };
 
-    insertFile = e => {
+    insertFile = (e) => {
         e.stopPropagation();
         e.preventDefault();
 
         if (e.currentTarget && e.currentTarget.files && e.currentTarget.files.length > 0) {
-            const file = e.currentTarget.files[0]
+            const file = e.currentTarget.files[0];
 
             let formData = new FormData();
             const config = {
@@ -350,9 +351,9 @@ class QuillEditor extends React.Component {
 
     render() {
         return (
-            <div>
+            <div style={{ width: '70vw' }}>
                 <div id="toolbar">
-                    <select className="ql-header" defaultValue={''} onChange={e => e.persist()}>
+                    <select className="ql-header" defaultValue={''} onChange={(e) => e.persist()}>
                         <option value="1" />
                         <option value="2" />
                         <option value="" />
@@ -371,7 +372,7 @@ class QuillEditor extends React.Component {
                     <button className="ql-clean" />
                 </div>
                 <ReactQuill
-                    ref={el => {
+                    ref={(el) => {
                         this.reactQuillRef = el;
                     }}
                     theme={'snow'}
@@ -410,7 +411,7 @@ class QuillEditor extends React.Component {
         syntax: false,
         toolbar: {
             container: '#toolbar',
-            id: "toorbar",
+            id: 'toorbar',
             handlers: {
                 insertImage: this.imageHandler,
                 insertVideo: this.videoHandler,

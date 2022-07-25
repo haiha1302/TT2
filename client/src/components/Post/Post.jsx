@@ -1,7 +1,4 @@
-import React, { useState } from 'react';
-import * as AiIcons from 'react-icons/ai';
-import * as BiIcons from 'react-icons/bi';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import './post.css';
 
 const Post = ({ post }) => {

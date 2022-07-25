@@ -20,14 +20,8 @@ const OTPServices = {
                 username: username,
                 password: password,
                 otp: hashOtp,
-                dateOfBirth: dateOfBirth,
-                // createdAt: Date.now()
+                dateOfBirth: dateOfBirth, 
             })
-
-            // await DB.otps.createIndex(
-            //     { "createdAt": 1 },
-            //     { expireAfterSeconds: 60 }
-            // )
 
             return insertOtp ? {email: email} : 0;
         } catch (error) {

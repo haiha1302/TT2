@@ -1,11 +1,10 @@
 import { useRef, useEffect, useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { checkUser } from '../../redux/slice/userSlice';
 import Navbar from './Navbar';
 import DropMenu from '../DropMenu/DropMenu';
 import { noAvatar } from '../../utils/contants';
-import * as AiIcons from 'react-icons/ai';
 import * as BiIcons from 'react-icons/bi';
 
 const Header = () => {
@@ -53,14 +52,11 @@ const Header = () => {
                 </form> */}
                 <div
                     className="header-blank header-nav"
-                    // onClick={() => {
-                    //     navigate('/', { replace: true });
-                    // }}
+                    onClick={() => {
+                        navigate('/', { replace: true });
+                    }}
                 >
-                    <NavLink to={'/'}>
                     Trang chủ
-
-                    </NavLink>
                 </div>
                 <div onClick={() => setOpen(!open)} className="header-blank">
                     {isAuth === true ? (

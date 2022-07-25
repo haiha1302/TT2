@@ -1,16 +1,15 @@
-// const User = require('../models/userModel');
 const Otp = require('otp-generator');
+const ObjectId = require('mongodb').ObjectId
 const { OTPServices } = require('./otpservice');
-// const OTP = require('../models/otpModel');
 const sendOTP = require('../utils/sendMail');
 const bcrypt = require('bcrypt');
-const { DB } = require('../database')
-const { JWTServices } = require('./jwtServices')
+const { DB } = require('../database');
+const { JWTServices } = require('./jwtServices');
 
 const UserServices = {
     registerUser: async ({ email, password, username, dateOfBirth }) => {
         const checkExistedUser = await DB.users.findOne({ email: email });
-        
+
         if (!(username && email && password)) {
             return {
                 code: 400,
@@ -18,31 +17,27 @@ const UserServices = {
             };
         }
 
-        // if (checkExistedUser?.username !== null) {
-        //     return {
-        //         code: 400,
-        //         message: 'This username has been used. Please change your username!',
-        //     };
-        // }
-
         if (!/^[a-zA-z0-9]*$/.test(username)) {
             return {
                 code: 500,
                 message: 'Invalid username entered',
             };
         }
+
         if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
             return {
                 code: 500,
                 message: 'Invalid email entered',
             };
         }
+
         if (password.length < 8) {
             return {
                 code: 400,
                 message: 'Password must be at least 8 characters',
             };
         }
+
         if (checkExistedUser?.email) {
             return {
                 code: 400,
@@ -57,8 +52,9 @@ const UserServices = {
             upperCaseAlphabets: false,
             specialChars: false,
         });
-        console.log('OTP is:', otp);
+
         sendOTP({ email, otp: otp });
+
         return {
             code: 200,
             element: await OTPServices.insertOtp({
@@ -79,7 +75,16 @@ const UserServices = {
                 message: 'username or password is not correct',
             };
         }
+
         const user = await DB.users.findOne({ email: email });
+
+        if (!user) {
+            return {
+                code: 400,
+                message: 'User is not found'
+            }
+        }
+
         const checkPassword = bcrypt.compare(user.password, password);
 
         if (!checkPassword) {
@@ -92,12 +97,7 @@ const UserServices = {
         return {
             code: 200,
             message: 'Login success',
-            user: {
-                _id: user._id,
-                email: user.email,
-                username: user.username,
-                dateOfBirth: user.dateOfBirth
-            }
+            user
         };
     },
 
@@ -112,7 +112,7 @@ const UserServices = {
                 };
             }
 
-            //get last 
+            //get last
             const lastOtp = otpHolder.length === 1 ? otpHolder[0] : otpHolder[otpHolder.length - 1];
             const isValid = await OTPServices.validOtp({
                 otp,
@@ -130,17 +130,17 @@ const UserServices = {
                     email: email,
                     username: lastOtp.username,
                     password: lastOtp.password,
-                    avatar: null,
                     dateOfBirth: lastOtp.dateOfBirth,
-                    create_date: new Date()
-                }
+                    avatar: 'https://obs.multicampus.vn/wp-content/uploads/2019/01/avatar.png',
+                    create_date: new Date(),
+                };
 
                 const user = await DB.users.insertOne(newUser);
-                    
+
                 if (user) {
                     await DB.otps.deleteOne({ email: email });
                 }
-             
+
                 return {
                     code: 201,
                     element: user,
@@ -149,7 +149,16 @@ const UserServices = {
         } catch (error) {
             console.error(error);
         }
-    }
+    },
+
+    updateAvatar: async (fileUpdate) => {
+        const uploadUrl = await DB.users.updateOne(
+            { _id: ObjectId(fileUpdate.userId) },
+            { $set: { avatar: fileUpdate.avatar } },
+        );
+
+        return uploadUrl;
+    },
 };
 
-module.exports = { UserServices }
+module.exports = { UserServices };
