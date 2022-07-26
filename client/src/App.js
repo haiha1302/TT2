@@ -9,14 +9,13 @@ import Settings from './Pages/Settings';
 import ListPosts from './Pages/ListPosts';
 import RequiredAuth from './components/RequiredAuth';
 import Single from './Pages/Single';
-// import ReviewForm from './components/ReviewForm/ReviewForm';
+// import Add from './components/Editor/Add';
 
 function App() {
     return (
         <div className="container">
             <Header />
             <Routes>
-            {/* <Route path='/test' element={<ReviewForm />} /> */}
                 <Route path="/post/:id" element={<Single />} />
                 <Route index element={<Home />} />
                 <Route

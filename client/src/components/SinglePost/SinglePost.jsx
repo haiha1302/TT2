@@ -6,6 +6,7 @@ import ReactQuill from 'react-quill';
 import http from '../../utils/http';
 import './singlePost.css';
 import { FaEdit, FaTrashAlt } from 'react-icons/fa';
+import Comments from '../Comments/Comments';
 
 const SinglePost = () => {
     const { id } = useParams();
@@ -43,6 +44,7 @@ const SinglePost = () => {
     };
 
     return (
+        <>
         <div className="singlePost">
             <div className="singlePostWrapper">
                 {post?.photo && <img src={post?.photo ? post?.photo : null} alt="" className="singlePostImg" />}
@@ -95,6 +97,8 @@ const SinglePost = () => {
                 )}
             </div>
         </div>
+        <Comments />
+        </>
     );
 };
 export default SinglePost;
